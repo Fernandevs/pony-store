@@ -1,12 +1,14 @@
-import { join } from 'path';
-
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ServeStaticModule } from '@nestjs/serve-static';
 
 import { AuthModule } from './auth/auth.module';
-import { ProductModule } from './product/product.module';
+import { CommonModule } from './common/common.module';
+import { FoodItemModule } from './food-item/food-item.module';
+import { FilesModule } from './files/files.module';
+import { OrderModule } from './order/order.module';
+import { SeedModule } from './seed/seed.module';
+import { FoodCategoryModule } from './food-category/food-category.module';
 
 @Module({
   imports: [
@@ -21,11 +23,13 @@ import { ProductModule } from './product/product.module';
       autoLoadEntities: true,
       synchronize: true,
     }),
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'public'),
-    }),
     AuthModule,
-    ProductModule,
+    CommonModule,
+    FoodItemModule,
+    FilesModule,
+    OrderModule,
+    SeedModule,
+    FoodCategoryModule,
   ],
 })
 export class AppModule {}
