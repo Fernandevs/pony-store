@@ -13,7 +13,6 @@ import { CreateFoodCategoryDto } from './dto/create-food-category.dto';
 import { UpdateFoodCategoryDto } from './dto/update-food-category.dto';
 import { FoodCategory } from './entities/food-category.entity';
 import { PaginationDto } from '../common/dto/pagination.dto';
-import { FoodItemImage } from '../food-item/entities/food-item-image.entity';
 
 @Injectable()
 export class FoodCategoryService {
@@ -22,7 +21,6 @@ export class FoodCategoryService {
   constructor(
     @InjectRepository(FoodCategory)
     private readonly foodCategoryRepository: Repository<FoodCategory>,
-    private readonly datasource: DataSource,
   ) {
   }
 

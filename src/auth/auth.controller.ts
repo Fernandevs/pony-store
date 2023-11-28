@@ -2,8 +2,7 @@ import { Controller, Get, Post, Body } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 import { AuthService } from './auth.service';
-import { RawHeaders, GetUser, Auth } from './decorators';
-
+import { Auth, GetUser } from './decorators';
 import { CreateUserDto, LoginUserDto } from './dto';
 import { User } from './entities/user.entity';
 
