@@ -8,6 +8,7 @@ import {
   Delete,
   Query,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 
 import { FoodItemService } from './food-item.service';
 import { CreateFoodItemDto } from './dto/create-food-item.dto';
@@ -15,7 +16,6 @@ import { UpdateFoodItemDto } from './dto/update-food-item.dto';
 import { ValidRoles } from '../auth/interfaces';
 import { Auth } from '../auth/decorators';
 import { PaginationDto } from '../common/dto/pagination.dto';
-import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Food Item')
 @Controller('food-item')

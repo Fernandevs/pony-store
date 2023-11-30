@@ -24,7 +24,7 @@ export class OrderService {
     @InjectRepository(Order)
     private readonly orderRepository: Repository<Order>,
     @InjectRepository(OrderDetail)
-    private readonly orderDetailsRepository: Repository<OrderDetail>
+    private readonly orderDetailsRepository: Repository<OrderDetail>,
   ) {}
 
   async create(createOrderDto: CreateOrderDto, user: User) {
@@ -32,7 +32,17 @@ export class OrderService {
       const { items, total } = createOrderDto;
       const order = this.orderRepository.create({
         orderDetails: items.map((orderDetail) =>
-          this.orderDetailsRepository.create({...orderDetail}),
+          this.orderDetailsRepository.create({
+            foodItem: {
+              id: orderDetail.item.id,
+              name: orderDetail.item.name,
+              category: orderDetail.item.category,
+              description: orderDetail.item.description,
+              price: orderDetail.item.price,
+            },
+            amount: orderDetail.amount,
+            quantity: orderDetail.quantity,
+          }),
         ),
         total: total,
         user,
@@ -42,7 +52,7 @@ export class OrderService {
 
       return { ...order };
     } catch (error) {
-      this.handleDBExceptions(error);
+      this.handleDatabaseExceptions(error);
     }
   }
 
@@ -66,7 +76,7 @@ export class OrderService {
     return `This action removes a #${id} order`;
   }
 
-  async removeAll(){
+  /* async removeAll() {
     const order = this.orderRepository.createQueryBuilder('order');
 
     try {
@@ -76,11 +86,11 @@ export class OrderService {
         .execute();
 
     } catch (error) {
-      this.handleDBExceptions(error);
+      this.handleDatabaseExceptions(error);
     }
-  }
+  } */
 
-  private handleDBExceptions(error: any) {
+  private handleDatabaseExceptions(error: any) {
     if (error.code === '23505') throw new BadRequestException(error.detail);
 
     this.logger.error(error);

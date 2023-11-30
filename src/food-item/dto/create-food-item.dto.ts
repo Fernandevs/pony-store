@@ -1,20 +1,19 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsArray,
-  IsNotEmpty, IsNotEmptyObject,
-  IsNumber, IsObject,
+  IsArray, IsIn,
+  IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsPositive,
   IsString,
   IsUUID,
   MinLength,
 } from 'class-validator';
-import { FoodCategory } from '../../food-category/entities/food-category.entity';
 
 export class CreateFoodItemDto {
   @IsUUID()
   @IsOptional()
-  id: string;
+  id?: string;
 
   @IsString()
   @IsNotEmpty()
@@ -36,7 +35,8 @@ export class CreateFoodItemDto {
   @IsOptional()
   images?: string[];
 
-  @IsObject()
-  @IsNotEmptyObject()
-  foodCategory: FoodCategory;
+  @IsIn(['Bebida', 'Comida', 'Desayuno', 'Postre'])
+  @IsString()
+  @IsNotEmpty()
+  category: string;
 }

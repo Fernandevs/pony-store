@@ -1,55 +1,60 @@
+import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+
+import { initialData } from './data/seed-data';
 import { User } from '../auth/entities/user.entity';
+import { FoodItemService } from '../food-item/food-item.service';
 
 @Injectable()
 export class SeedService {
-  constructor() {}
+  constructor(
+    private readonly foodItemService: FoodItemService,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>
+  ) {}
 
-  async runSeed() {/*
+  async runSeed() {
     await this.deleteTables();
-    const adminUser = await this.insertUsers();
+    await this.insertUsers();
+    await this.insertNewProducts();
 
-    await this.insertNewProducts(adminUser);
-
-    return 'SEED EXECUTED';*/
+    return 'SEED EXECUTED';
   }
 
   private async deleteTables() {
-    /*await this.productsService.deleteAllProducts();
+    await this.foodItemService.deleteAllProducts();
 
     const queryBuilder = this.userRepository.createQueryBuilder();
     await queryBuilder
       .delete()
       .where({})
-      .execute();*/
+      .execute();
   }
 
-  private async insertUsers() {/*
+  private async insertUsers() {
     const seedUsers = initialData.users;
-    const users: User[] = [];
 
     seedUsers.forEach(user => {
-      users.push(this.userRepository.create(user));
+      this.userRepository.create({ ...user });
     });
 
-    const dbUsers = await this.userRepository.save(seedUsers);
-
-    return dbUsers[0];*/
+    await this.userRepository.save(seedUsers);
   }
 
-  private async insertNewProducts(user: User) {/*
-    await this.productsService.deleteAllProducts();
+  private async insertNewProducts() {
+    await this.foodItemService.deleteAllProducts();
 
     const products = initialData.products;
 
     const insertPromises = [];
 
     products.forEach(product => {
-      insertPromises.push(this.productsService.create(product, user));
+      insertPromises.push(this.foodItemService.create({ ...product }));
     });
 
     await Promise.all(insertPromises);
 
-    return true;*/
+    return true;
   }
 }

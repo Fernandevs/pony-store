@@ -26,12 +26,12 @@ export class FilesController {
     private readonly configService: ConfigService,
   ) {}
 
-  @Get('product/:imageName')
+  @Get('product/:image')
   findProductImage(
     @Res() res: Response,
-    @Param('imageName') imageName: string,
+    @Param('image') image: string,
   ) {
-    const path = this.filesService.getStaticProductImage(imageName);
+    const path = this.filesService.getStaticProductImage(image);
 
     res.sendFile(path);
   }

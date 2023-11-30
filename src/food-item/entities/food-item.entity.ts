@@ -1,9 +1,8 @@
-import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 
 import { FoodItemImage } from './food-item-image.entity';
 import { OrderDetail } from '../../order/entities/oder-details.entity';
-import { FoodCategory } from '../../food-category/entities/food-category.entity';
 
 @Entity('food_items')
 export class FoodItem {
@@ -21,12 +20,11 @@ export class FoodItem {
   })
   description: string;
 
-  @Column('money')
+  @Column('float')
   price: number;
 
-  @OneToOne(() => FoodCategory, (foodCategory) => foodCategory.foodItem)
-  @JoinColumn()
-  foodCategory: FoodCategory;
+  @Column('text')
+  category: string;
 
   @ApiProperty()
   @OneToMany(() => FoodItemImage, (foodItemImage) => foodItemImage.foodItem, {
@@ -36,7 +34,7 @@ export class FoodItem {
   @JoinColumn()
   images?: FoodItemImage[];
 
-  @OneToMany(() => OrderDetail, (orderDetails) => orderDetails.foodItems, {
+  @OneToMany(() => OrderDetail, (orderDetails) => orderDetails.foodItem, {
     cascade: true,
     eager: true,
   })

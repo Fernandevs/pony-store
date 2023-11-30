@@ -8,7 +8,6 @@ import { FoodItemModule } from './food-item/food-item.module';
 import { FilesModule } from './files/files.module';
 import { OrderModule } from './order/order.module';
 import { SeedModule } from './seed/seed.module';
-import { FoodCategoryModule } from './food-category/food-category.module';
 
 @Module({
   imports: [
@@ -25,11 +24,10 @@ import { FoodCategoryModule } from './food-category/food-category.module';
     }),
     AuthModule,
     CommonModule,
-    FoodItemModule,
     FilesModule,
+    FoodItemModule,
     OrderModule,
     SeedModule,
-    FoodCategoryModule,
   ],
 })
 export class AppModule {}

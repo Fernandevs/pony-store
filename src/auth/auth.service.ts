@@ -12,7 +12,7 @@ import * as bcrypt from 'bcrypt';
 
 import { User } from './entities/user.entity';
 import { CreateUserDto, LoginUserDto } from './dto';
-import { JwtPayload } from './interfaces/jwt-payload.interface';
+import { JwtPayload } from './interfaces';
 
 @Injectable()
 export class AuthService {
@@ -48,7 +48,13 @@ export class AuthService {
 
     const user = await this.userRepository.findOne({
       where: { email },
-      select: { email: true, password: true, id: true }, //! OJO!
+      select: {
+        id: true,
+        email: true,
+        password: true,
+        fullName: true,
+        roles: true,
+      },
     });
 
     if (!user)
@@ -78,8 +84,6 @@ export class AuthService {
 
   private handleDBErrors(error: any): never {
     if (error.code === '23505') throw new BadRequestException(error.detail);
-
-    console.log(error);
 
     throw new InternalServerErrorException('Please check server logs');
   }

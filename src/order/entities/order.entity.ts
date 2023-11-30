@@ -2,8 +2,9 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -23,9 +24,17 @@ export class Order {
   })
   total: number;
 
-  @OneToMany(() => OrderDetail, (orderDetails) => orderDetails.order)
+  @OneToMany(() => OrderDetail, (orderDetails) => orderDetails.order, {
+    eager: true,
+    cascade: true,
+  })
+  @JoinColumn()
   orderDetails: OrderDetail[];
 
-  @OneToOne(() => User, (user) => user.order)
+  @ManyToOne(() => User, (user) => user.orders, {
+    eager: true,
+    cascade: true,
+  })
+  @JoinColumn()
   user: User;
 }

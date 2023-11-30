@@ -2,7 +2,8 @@ import {
   BeforeInsert,
   BeforeUpdate,
   Column,
-  Entity, OneToOne,
+  Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Order } from '../../order/entities/order.entity';
@@ -59,8 +60,8 @@ export class User {
   })
   roles: string[];
 
-  @OneToOne(() => Order, (order) => order.user)
-  order: Order;
+  @OneToMany(() => Order, (order) => order.user)
+  orders: Order[];
 
   @BeforeInsert()
   checkFieldsBeforeInsert() {

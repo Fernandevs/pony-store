@@ -24,18 +24,18 @@ export class FoodItemService {
     @InjectRepository(FoodItem)
     private readonly foodItemRepository: Repository<FoodItem>,
     @InjectRepository(FoodItemImage)
-    private readonly foodItemImageRepository: Repository<FoodItemImage>,
+    private readonly imageRepository: Repository<FoodItemImage>,
     private readonly datasource: DataSource,
-  ) {
-  }
+  ) {}
 
   async create(createFoodItemDto: CreateFoodItemDto) {
     try {
       const { images = [], ...foodItemDetails } = createFoodItemDto;
+
       const foodItem = this.foodItemRepository.create({
         ...foodItemDetails,
         images: images.map((image) =>
-          this.foodItemImageRepository.create({ url: image }),
+          this.imageRepository.create({ url: image }),
         ),
       });
 
@@ -43,7 +43,7 @@ export class FoodItemService {
 
       return { ...foodItem };
     } catch (error) {
-      this.handleDBExceptions(error);
+      this.handleDatabaseExceptions(error);
     }
   }
 
@@ -96,8 +96,8 @@ export class FoodItemService {
       if (images) {
         await queryRunner.manager.delete(FoodItemImage, { foodItem: { id } });
 
-        foodItem.images = images.map((image) =>
-          this.foodItemImageRepository.create({ url: image }),
+        foodItem.images = images.map((url) =>
+          this.imageRepository.create({ url }),
         );
       }
 
@@ -110,7 +110,7 @@ export class FoodItemService {
     } catch (error) {
       await queryRunner.rollbackTransaction();
       await queryRunner.release();
-      this.handleDBExceptions(error);
+      this.handleDatabaseExceptions(error);
     }
   }
 
@@ -121,10 +121,25 @@ export class FoodItemService {
     return { ...foodItem };
   }
 
-  private handleDBExceptions(error: any) {
+  async deleteAllProducts() {
+    const query = this.foodItemRepository.createQueryBuilder('food-item');
+
+    try {
+      return await query
+        .delete()
+        .where({})
+        .execute();
+
+    } catch (error) {
+      this.handleDatabaseExceptions(error);
+    }
+  }
+
+  private handleDatabaseExceptions(error: any) {
     if (error.code === '23505') throw new BadRequestException(error.detail);
 
     this.logger.error(error);
+
     throw new InternalServerErrorException(
       'Unexpected error, check server logs',
     );
