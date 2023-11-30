@@ -1,10 +1,11 @@
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 
 import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
   Logger,
+  NotFoundException,
   Query,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -25,7 +26,9 @@ export class OrderService {
     private readonly orderRepository: Repository<Order>,
     @InjectRepository(OrderDetail)
     private readonly orderDetailsRepository: Repository<OrderDetail>,
-  ) {}
+    private readonly datasource: DataSource,
+  ) {
+  }
 
   async create(createOrderDto: CreateOrderDto, user: User) {
     try {
@@ -57,26 +60,35 @@ export class OrderService {
   }
 
   async findAll(@Query() paginationDto: PaginationDto, user: User) {
-    console.log(user);
-    return `This action returns all order ${paginationDto}`;
+    const { limit = 10, offset = 0 } = paginationDto;
+
+    return await this.datasource
+      .getRepository(Order)
+      .createQueryBuilder('orders')
+      .where('orders.userId = :userId', { userId: user.id })
+      .limit(limit)
+      .offset(offset)
+      .getMany();
   }
 
   async findOne(id: string, user: User) {
-    console.log(user);
-    return `This action returns a #${id} order`;
+    const order = await this.datasource
+      .getRepository(Order)
+      .createQueryBuilder('orders')
+      .where('id = :id', { id })
+      .andWhere('orders.userId = :userId', { userId: user.id })
+      .getOne();
+
+    if (!order) throw new NotFoundException(`Order with ${id} not found`);
+
+    console.log(order);
+
+    return {
+      ...order
+    };
   }
 
-  async update(id: string, updateOrderDto: UpdateOrderDto, user: User) {
-    console.log(user);
-    return `This action updates a #${id} order ${updateOrderDto}`;
-  }
-
-  async remove(id: string, user: User) {
-    console.log(user);
-    return `This action removes a #${id} order`;
-  }
-
-  /* async removeAll() {
+  async removeAll() {
     const order = this.orderRepository.createQueryBuilder('order');
 
     try {
@@ -88,7 +100,7 @@ export class OrderService {
     } catch (error) {
       this.handleDatabaseExceptions(error);
     }
-  } */
+  }
 
   private handleDatabaseExceptions(error: any) {
     if (error.code === '23505') throw new BadRequestException(error.detail);
