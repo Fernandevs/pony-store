@@ -13,9 +13,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { Order } from './entities/order.entity';
-import { OrderDetail } from './entities/oder-details.entity';
+// import { OrderDetail } from './entities/oder-details.entity';
 import { User } from '../auth/entities/user.entity';
 import { PaginationDto } from '../common/dto/pagination.dto';
+import { FoodItem } from '../food-item/entities/food-item.entity';
 
 @Injectable()
 export class OrderService {
@@ -24,35 +25,37 @@ export class OrderService {
   constructor(
     @InjectRepository(Order)
     private readonly orderRepository: Repository<Order>,
-    @InjectRepository(OrderDetail)
-    private readonly orderDetailsRepository: Repository<OrderDetail>,
+    @InjectRepository(FoodItem)
+    private readonly foodItemRepository: Repository<FoodItem>,
     private readonly datasource: DataSource,
   ) {
   }
 
   async create(createOrderDto: CreateOrderDto, user: User) {
+    console.log(createOrderDto);
+
     try {
       const { items, total } = createOrderDto;
+      console.log('Hola, mundo');
       const order = this.orderRepository.create({
-        orderDetails: items.map((orderDetail) =>
-          this.orderDetailsRepository.create({
-            foodItem: {
-              id: orderDetail.item.id,
-              name: orderDetail.item.name,
-              category: orderDetail.item.category,
-              description: orderDetail.item.description,
-              price: orderDetail.item.price,
-            },
-            amount: orderDetail.amount,
-            quantity: orderDetail.quantity,
+        items: items.map(
+          (item) => this.foodItemRepository.create({
+            id: item.id,
+            name: item.name,
+            price: item.price,
+            description: item.description,
+            category: item.category,
           }),
         ),
         total: total,
         user,
       });
 
+      console.log(order);
+
       await this.orderRepository.save(order);
 
+      console.log('Hola, mundo 3');
       return { ...order };
     } catch (error) {
       this.handleDatabaseExceptions(error);

@@ -14,20 +14,13 @@ class CreateOrderDetailsDto {
   @Type(() => CreateFoodItemDto)
   @IsObject()
   item: CreateFoodItemDto;
-
-  @IsNumber()
-  quantity: number;
-
-  @IsNumber()
-  @IsPositive()
-  amount: number;
 }
 
 export class CreateOrderDto {
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => CreateOrderDetailsDto)
-  items: CreateOrderDetailsDto[];
+  @Type(() => CreateFoodItemDto)
+  items: CreateFoodItemDto[];
 
   @IsPositive()
   @IsNumber()

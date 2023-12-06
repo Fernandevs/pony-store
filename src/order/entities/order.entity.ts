@@ -2,14 +2,14 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
+  JoinColumn, JoinTable, ManyToMany,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-import { OrderDetail } from './oder-details.entity';
+// import { OrderDetail } from './oder-details.entity';
 import { User } from '../../auth/entities/user.entity';
+import { FoodItem } from '../../food-item/entities/food-item.entity';
 
 @Entity('orders')
 export class Order {
@@ -19,17 +19,14 @@ export class Order {
   @CreateDateColumn()
   createdAt: Date;
 
-  @Column('money', {
+  @Column('float', {
     nullable: false,
   })
   total: number;
 
-  @OneToMany(() => OrderDetail, (orderDetails) => orderDetails.order, {
-    eager: true,
-    cascade: true,
-  })
-  @JoinColumn()
-  orderDetails: OrderDetail[];
+  @ManyToMany(() => FoodItem, (item) => item.orders)
+  @JoinTable()
+  items: FoodItem[];
 
   @ManyToOne(() => User, (user) => user.orders, {
     eager: true,
